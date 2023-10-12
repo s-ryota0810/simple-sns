@@ -1,7 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/context/auth';
 import Head from 'next/head';
+import apiClient from '@/lib/apiClient';
 
-const login = () => {
+const Login = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const router = useRouter();
+  
+  const { login } = useAuth()
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    // 新規登録を行うAPIを叩く
+    try {
+      const response = await apiClient.post("/auth/login", {
+        email,
+        password,
+      });
+      
+      router.push("/");
+      const token = response.data.token;
+      
+      login(token);
+
+    } catch (err) {
+      console.log(err)
+      alert("入力内容が正しくありません");
+    }
+
+  }
   return <div
     style={{ height: "88vh" }}
     className="flex flex-col justify-center py-12 sm:px-6 lg:px-8"
@@ -16,7 +47,7 @@ const login = () => {
     </div>
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -31,6 +62,7 @@ const login = () => {
               autoComplete="email"
               required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
             />
           </div>
           <div className="mt-6">
@@ -47,6 +79,7 @@ const login = () => {
               autoComplete="current-password"
               required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
             />
           </div>
           <div className="mt-6">
@@ -63,4 +96,4 @@ const login = () => {
   </div>
 };
 
-export default login;
+export default Login;
