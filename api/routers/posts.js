@@ -1,6 +1,4 @@
 const router = require("express").Router()
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient()
@@ -31,12 +29,12 @@ router.post("/post", async (req, res) => {
 router.get("/get_latest_post", async (req, res) => {
 	
 	try {
-		const latestPosts = await prisma.post.findMany({take: 10, orderBy: { createdAt: "desc"}});
+		const latestPosts = await prisma.post.findMany({take: 10, orderBy: { createAt: "desc"}});
 		
-		return res.json(latestPosts);
+		return res.status(200).json(latestPosts);
 	} catch (err) {
 		console.log(err);
-		res.status(500).json({ message: "サーバーエラーです"});
+		res.status(500).json({ message: "サーバーエラーです" });
 	}
 })
 
