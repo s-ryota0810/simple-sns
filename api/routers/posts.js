@@ -25,7 +25,19 @@ router.post("/post", async (req, res) => {
 		console.log(err)
 		return res.status(500).json({ message: "サーバーエラーです"})
 	}
+})
+
+// 最新投稿用API
+router.get("/get_latest_post", async (req, res) => {
 	
+	try {
+		const latestPosts = await prisma.post.findMany({take: 10, orderBy: { createdAt: "desc"}});
+		
+		return res.json(latestPosts);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: "サーバーエラーです"});
+	}
 })
 
 module.exports = router;
