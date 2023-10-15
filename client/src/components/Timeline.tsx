@@ -1,26 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Post from '@/components/Post'
 import apiClient from '@/lib/apiClient';
+import { PostType } from "../types";
 
 const Timeline = () => {
   const [postText, setPostText] = useState<string>("");
+  const [latestPosts, setLatestPosts] = useState<PostType[]>([]);
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     // リロードを避ける
     e.preventDefault();
     
     try {
-      await apiClient.post("/posts/post", {
+      const newPost = await apiClient.post("/posts/post", {
         content: postText,
       });
-      
+      setLatestPosts((prevPosts) => [newPost.data, ...prevPosts]);
       setPostText("");
     } catch (err) {
       console.log(err)
       alert("ログインしてください");
     }
-    
-    
   };
+  useEffect(() => {
+    const fetchLatestPosts = async () => {
+      try {
+        const response = await apiClient.get("/posts/get_latest_post");
+        setLatestPosts(response.data)          
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    
+    fetchLatestPosts();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-100">
       <main className="container mx-auto py-4">
@@ -42,13 +55,9 @@ const Timeline = () => {
             </button>
           </form>
         </div>
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+        {latestPosts.map((post: PostType) => (
+          <Post key={post.id} post={post} />
+        ))}
       </main>
     </div>
   )
