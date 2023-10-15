@@ -15,7 +15,9 @@ const Timeline = () => {
       const newPost = await apiClient.post("/posts/post", {
         content: postText,
       });
+      console.log(newPost.data)
       setLatestPosts((prevPosts) => [newPost.data, ...prevPosts]);
+      console.log(latestPosts)
       setPostText("");
     } catch (err) {
       console.log(err)
@@ -26,7 +28,7 @@ const Timeline = () => {
     const fetchLatestPosts = async () => {
       try {
         const response = await apiClient.get("/posts/get_latest_post");
-        setLatestPosts(response.data)          
+        setLatestPosts(response.data)
       } catch (err) {
         console.log(err);
       }
