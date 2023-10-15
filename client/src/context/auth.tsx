@@ -20,11 +20,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const token = localStorage.getItem("auth_token");
 
   useEffect(() => {
+    const token = localStorage.getItem("auth_token");
     apiClient.defaults.headers["Authorization"] = `Bearer ${token}`;
-  }, [token])
+  }, [])
 	const login = async (token: string) => {
 		localStorage.setItem("auth_token", token)
 	};
