@@ -11,6 +11,7 @@ function isAuthenticated(req, res, next) {
     if (err) {
       return res.status(401).json({ message: "権限がありません"})
     }
+    
     req.userId = decoded.id
 
     next();
