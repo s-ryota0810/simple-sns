@@ -1,7 +1,12 @@
 import Link from 'next/link'
 import React from 'react'
+import { useAuth } from "@/context/auth"
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+  
+  console.log(user);
+  
   return (
     <header className="bg-gray-700 p-4 text-white">
       <div className="container mx-auto flex justify-between items-center">
@@ -10,6 +15,19 @@ const Navbar = () => {
         </h1>
         <nav>
           <ul className="flex space-x-4">
+            { user ? (            <>
+              <Link
+                href={`/profile${user.id}`}
+                className="bg-white text-gray-900 py-2 px-3 rounded-lg font-medium"
+              >
+                プロフィール
+              </Link>
+              <button onClick={logout} className="bg-white text-gray-900 py-2 px-3 rounded-lg font-medium"
+              >
+                ログアウト
+              </button>
+            </>
+            ) : (
             <>
               <Link
                 href="/login"
@@ -24,6 +42,7 @@ const Navbar = () => {
                 サインアップ
               </Link>
             </>
+            )}
           </ul>
         </nav>
       </div>
