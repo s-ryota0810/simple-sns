@@ -19,8 +19,12 @@ router.post("/post", isAuthenticated, async (req, res) => {
 				authorId: req.userId,
 			},
       include: {
-        author: true
-      }
+        author: {
+					include: {
+						profile: true,
+					},
+				},
+      },
 		});
     console.log(newPost)
 		return res.status(201).json(newPost)
@@ -39,7 +43,11 @@ router.get("/get_latest_post", async (req, res) => {
         take: 10,
         orderBy: { createAt: "desc"},
         include: {
-          author: true,
+          author: {
+						include: {
+							profile: true,
+						},
+					},
         }
       });
 		
@@ -47,6 +55,31 @@ router.get("/get_latest_post", async (req, res) => {
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({ message: "サーバーエラーです" });
+	}
+})
+
+// ユーザー投稿を取得
+router.get("/:userId", async (req, res) => {
+	const { userId } = req.params
+	
+	try {
+		const userPosts = await prisma.post.findMany({
+			where: {
+				authorId: parseInt(userId),
+			},
+			orderBy: {
+				createAt: "desc",
+			},
+			include: {
+				author: true,
+			},
+		})
+		res.status(200).json(userPosts);
+		
+	} catch (err) {
+		console.log(err)
+		
+		res.status(500).json({ message: "サーバーエラーです"})
 	}
 })
 
